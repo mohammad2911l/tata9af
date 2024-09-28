@@ -1,0 +1,26 @@
+RewriteEngine On
+
+# إزالة الامتدادات
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteCond %{REQUEST_FILENAME}\.php -f 
+RewriteRule ^(.*)$ $1.php [NC,L]
+
+# منع الوصول إلى ملف conn.php
+<Files "conn.php">
+    Require all denied
+</Files>
+
+# إعادة توجيه المحاولات للوصول إلى الملفات المحظورة إلى error.php
+RewriteCond %{REQUEST_URI} /conn.php
+RewriteRule .* /error?e=405 [L,R]
+
+# إعادة توجيه المحاولات للوصول إلى ملفات غير موجودة إلى error.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* /error?e=404 [L,R]
+
+# توجيه المستخدمين إلى صفحة محددة عند محاولة الوصول إلى مجلد
+Options -Indexes
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.*)$ /error?e=403 [R=301,L]
